@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {margin: 0;padding: 0;box-sizing: border-box;font-family: Arial, Helvetica, sans-serif;}
+        body {height: 100vh;display: flex;align-items: center;justify-content: center;background: black;color: aliceblue;overflow: hidden;}
+
+        h1 {font-size: 3em;margin: 1.3em auto;margin-top: 0; text-align: center;}
+        h2 {margin: 1em auto;}
+        .text-danger {color: red;}
+
+        img {margin: 5px 0;}
+
+        button {padding: 1em;cursor: pointer;margin: 5px 0;}
+
+        button.start {
+            font-size:15px;
+            font-family:Arial;
+            min-width:140px;
+            height:50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-width:1px;
+            color:#ffffff;
+            border-color:#337fed;
+            font-weight:bold;
+            border-top-left-radius:6px;
+            border-top-right-radius:6px;
+            border-bottom-left-radius:6px;
+            border-bottom-right-radius:6px;
+            box-shadow:inset 0px 1px 0px 0px #97c4fe;
+            text-shadow:inset 0px 1px 0px #1570cd;
+            background:linear-gradient(#3d94f6, #1e62d0);
+        }
+
+        button.start:hover {
+            background: linear-gradient(#1e62d0, #3d94f6);
+        }
+
+        .modal {width: 100%;height: 100%;background: rgba(0,0,0,.8);position: absolute;z-index: 10;display: flex;flex-direction: column;justify-content: center;align-items: center;font-size: 1.5em;border: 1px solid red;}
+        
+        #app {min-width: 553px;width: 553px;height: 552px;border: 1px solid transparent;
+            display: grid;position: relative;
+            grid-template-columns: repeat(auto-fit, 50px);
+        }
+        #app .header {position: absolute;width: 100%;left: 0;padding: .5em;z-index: 5;top: -46px;display: flex;justify-content: space-between;}
+        #app .header div {font-size: 1.5em;font-weight: bold;}
+
+        #app .box {border: 1px solid transparent;width: 50px;height: 50px;position: relative;z-index: 1;display: flex;align-items: center;justify-content: center;}
+        
+        /*  Y
+            top: -08
+            right: -64 
+            bottom: -124
+            left: -184px
+
+            X
+            1: -07 -66px -126px -186px -248px -308 -367
+        */
+
+        #app .box.jugador {position: absolute;background: url(./sprite.png);z-index: 2;background-position: -7px -124px;background-size: auto 240px;border: 1px solid transparent;background-repeat: no-repeat !important;}
+
+        #app .box.enemigo {background-size: 100% 100%;background-repeat: no-repeat !important;background-size: 50px 50px !important; background: url(./jugador.png);position: absolute;z-index: 2;}
+        
+        #app .clean {background: url(./clean.jpg);background-size: 150px 150px;}
+        #app .bloq {background: url(./bloq.jpg);background-size: contain;z-index: 5;}
+        #app .brick {background: url(./brick.jpg);
+            background-size: 250% 250%;
+            filter: grayscale(100%) brightness(2.5);
+        }
+        #app .box.timer {background: url(./bomb.png);position: absolute;background-position: center center;background-size: 50px 50px;background-position: center;background-repeat: no-repeat;z-index: 7;}
+
+        #app .box.explosion {
+            width: 50px;height: 50px;background: url(./explosion.png);background-size: 600px;background-position: -100px;animation: explosion 677ms steps(10) infinite;
+        }
+
+        #app .enemigo {background-size: 100% 100% !important;}
+        #app .enemigo._1 {top: 450px;left: 50px;animation: ene1 5s infinite alternate steps(1);background: url(./monster1.png);animation-play-state: paused;}
+        #app .enemigo._2 {top: 250px;left: 100px;animation: ene2 5s infinite alternate steps(1);background: url(./monster1.png);animation-play-state: paused;}
+        #app .enemigo._3 {top: 50px;left: 200px;animation: ene3 5s infinite alternate steps(1);background: url(./monster1.png);animation-play-state: paused;}
+        #app .enemigo._4 {top: 50px;left: 400px;animation: ene4 5s infinite alternate steps(1);background: url(./monster1.png);animation-play-state: paused;}
+        #app .enemigo._5 {top: 250px;left: 400px;animation: ene5 7s infinite alternate steps(1);background: url(./monster1.png);animation-play-state: paused;}
+        #app .enemigo._6 {top: 450px;left: 400px;animation: ene6 5s infinite alternate steps(1);background: url(./monster1.png);animation-play-state: paused;}
+
+        /* 14
+        VM835:1 28
+        VM835:1 42
+        VM835:1 56
+        VM835:1 70
+        VM835:1 84
+        VM835:1 98 */
+
+        @keyframes explosion {
+            to {
+                background-position: -600px;
+            }
+        }
+
+        @keyframes ene1 {
+            0% {top: 400px;left: 50px;}
+            28% {top: 450px;left: 50px;}
+            42% {top: 450px;left: 100px;}
+            56% {top: 450px;left: 150px;}
+            70% {top: 400px;left: 150px;}
+            84% {top: 450px;left: 150px;}
+            95% {top: 450px;left: 200px;}
+        }
+        @keyframes ene2 {
+            0% {top: 250px;left: 100px;}
+            20% {top: 250px;left: 150px;}
+            40% {top: 300px;left: 150px;}
+            60% {top: 250px;left: 150px;}
+            80% {top: 250px;left: 200px;}
+        }
+        @keyframes ene3 {
+            0% {top: 50px;left: 200px;}
+            28% {top: 50px;left: 250px;}
+            42% {top: 50px;left: 300px;}
+            56% {top: 50px;left: 250px;}
+            70% {top: 100px;left: 250px;}
+            80% {top: 150px;left: 250px;}
+            90% {top: 150px;left: 200px;}
+        }
+        @keyframes ene4 {
+            0% {top: 50px;left: 400px;}
+            40% {top: 50px;left: 450px;}
+            80% {top: 100px;left: 450px;}
+        }
+        @keyframes ene5 {
+            0% {top: 250px;left: 400px;}
+            10% {top: 250px;left: 350px;}
+            20% {top: 250px;left: 300px;}
+            30% {top: 250px;left: 350px;}
+            40% {top: 300px;left: 350px;}
+            50% {top: 250px;left: 350px;}
+            60% {top: 200px;left: 350px;}
+            70% {top: 250px;left: 350px;}
+            80% {top: 250px;left: 400px;}
+        }
+        @keyframes ene6 {
+            0% {top: 450px;left: 400px;}
+            20% {top: 450px;left: 450px;}
+            40% {top: 400px;left: 450px;}
+            60% {top: 450px;left: 450px;}
+            80% {top: 450px;left: 500px;}
+        }
+    </style>
+</head>
+<body>
+    
+    <div>
+        <h1>Bomberman</h1>
+        <div id="app">
+            <div class="modal" id="modal"></div>
+            <div class="header">
+                <div id="timeOut">300</div>
+                <div id="monster">0</div>
+                <div id="bomb">00</div>
+            </div>
+            <div class="box jugador" id="jugador"></div>
+            <div class="box enemigo _1"></div>
+            <div class="box enemigo _2"></div>
+            <div class="box enemigo _3"></div>
+            <div class="box enemigo _4"></div>
+            <div class="box enemigo _5"></div>
+            <div class="box enemigo _6"></div>
+        </div>
+    </div>
+    <script>
+        let d = document
+        let w = window
+        let move = true
+        let activeBomb = false
+        let isGameOver = false
+        let time = 300
+        let destroyedMonster = 0
+        let destroyedBrick = 0
+        
+        // Bloques
+        let space = [12,13,23,15,16,17,19,20,31,27,29,37,38,57,58,59,69,51,61,62,63,73,83,85,95,97,107,81,89,91,100,101,102,103,108,109]
+        let brick = [14,18,25,34,35,36,39,40,41,42,45,47,49,53,56,67,78,79,64,75,86,104,105,106,60,71,82,93,84,80] 
+        let wall = [0,1,2,3,4,5,6,7,8,9,10,11,22,24,26,28,30,33,44,46,48,50,52,55,66,68,70,72,74,77,88,90,92,94,96,99,110,21,32,43,54,65,76,87,98,109,120,111,112,113,114,115,116,117,118,119]
+
+        let posX = 0
+        let spriteX = '07 66 126 186 248 308 367'.split(' ')
+        let walk = {
+            top: 4,
+            right: 64,
+            bottom: 124,
+            left: 184
+        }
+
+        // 
+        let app = d.querySelector('#app')
+        let modal = d.querySelector('#modal')
+        let timeOut = d.querySelector('#timeOut')
+        let jugador = d.querySelector('#jugador')
+        let monster = d.querySelector('#monster') 
+        let bomb = d.querySelector('#bomb') 
+
+        if( !localStorage.getItem('score') ){
+            localStorage.setItem('score', '')
+        }
+
+        for (let index = 0; index < 121; index++) {
+            let newBox = d.createElement('div')
+            newBox.classList.add('box')
+            // newBox.innerText = index
+            
+            if( wall.includes(index) ){
+                newBox.classList.add('bloq')
+            }
+            if( brick.includes(index) ){
+                newBox.classList.add('brick')
+            }
+            if( space.includes(index) ){
+                newBox.classList.remove('bloq')
+                newBox.classList.add('clean')
+            }
+            jugador.style.top = '50px'
+            jugador.style.left = '50px'
+       
+            app.appendChild(newBox)
+        }
+
+        d.addEventListener('keydown', (event) => {
+            if( activeBomb && event.keyCode == 37){
+                jugador.style.backgroundPosition = `-7px -${walk['left']}px`
+                let opt = {
+                    left: jugador.offsetLeft-jugador.offsetWidth,
+                    top: jugador.offsetTop
+                }
+                mover(opt)
+                if( move ){
+                    jugador.style.left = opt.left + 'px'
+                }
+            }
+            if( activeBomb && event.keyCode == 38){
+                jugador.style.backgroundPosition = `-7px -${walk['top']}px`
+                let opt = {
+                    top: jugador.offsetTop-jugador.offsetWidth,
+                    left: jugador.offsetLeft
+                }
+                mover(opt)
+                if( move ){
+                    jugador.style.top = opt.top + 'px'
+                }
+            }
+            if( activeBomb && event.keyCode == 39){
+                jugador.style.backgroundPosition = `-7px -${walk['right']}px`
+                let opt = {
+                    left: jugador.offsetLeft+jugador.offsetWidth,
+                    top: jugador.offsetTop
+                }
+                mover(opt)
+                if( move ){
+                    jugador.style.left = opt.left + 'px'
+                }
+            }
+            if( activeBomb && event.keyCode == 40){
+                jugador.style.backgroundPosition = `-7px -${walk['bottom']}px`
+                let opt = {
+                    top: jugador.offsetTop+jugador.offsetWidth,
+                    left: jugador.offsetLeft
+                }
+                mover(opt)
+                if( move ){
+                    jugador.style.top = opt.top + 'px'
+                }
+            }
+        })
+
+        function mover(param){
+            move = true
+            d.querySelectorAll('.bloq, .brick').forEach((elm) => {
+                if ( param.left == elm.offsetLeft && param.top == elm.offsetTop ){
+                    move = false
+                }
+            })
+        }
+
+        setInterval(() => {
+            if( activeBomb ){
+                d.querySelector('#timeOut').innerText = time--
+            }
+            if( time < -1 ){
+                try {
+                    app.removeChild(jugador)
+                    isGameOver = true
+                    ActiveModal(`GameOver`,`
+                    
+                    <div>Tiempo agotado!</div> 
+                    <button class='start' onclick='restart()'>¿Volver a jugar?</button>`)
+                } catch (error) {}
+            }
+            if( isGameOver ) {
+                d.querySelector('#timeOut').innerText = 300
+                d.querySelector('#monster').innerText = 0
+                destroyedBrick = 0
+            }
+        }, 1000)
+
+        setInterval(() => {
+            d.querySelectorAll('.enemigo').forEach((ene) => {
+                if ( ene.offsetLeft == jugador.offsetLeft && ene.offsetTop == jugador.offsetTop ){
+                    isGameOver = true
+                    app.removeChild(jugador)
+                    ActiveModal(`GameOver`,`
+                    
+                    <div>Muerto por monster!</div> 
+                    <button class='start' onclick='restart()'>¿Volver a jugar?</button>`)
+                }
+                d.querySelectorAll('.explosion').forEach((exp) => {
+                    if ( ene.offsetLeft == exp.offsetLeft && ene.offsetTop == exp.offsetTop ){
+                        d.querySelector('#monster').innerText = ++destroyedMonster
+                        app.removeChild(ene)
+                    }
+                })
+            })
+            d.querySelectorAll('.explosion').forEach((exp) => {
+                if ( jugador.offsetLeft == exp.offsetLeft && jugador.offsetTop == exp.offsetTop ){
+                    isGameOver = true
+                    app.removeChild(jugador)
+                    ActiveModal(`GameOver`,`
+                    
+                    <div>Muerto por bomba!</div> 
+                    <button class='start' onclick='restart()'>¿Volver a jugar?</button>`)
+                }
+            })            
+        }, 200)
+
+        function plantBomb(){
+            if( activeBomb && !isGameOver ){
+                let explosion = d.createElement('div')
+                explosion.style.left = jugador.offsetLeft + 'px'
+                explosion.style.top = jugador.offsetTop + 'px'
+                explosion.classList.add('box')
+                app.appendChild(explosion)
+
+                setTimeout((e) => {
+                    e.classList.add('timer')
+                    e.classList.add('bloq')
+                }, 2000, explosion)
+                setTimeout((e) => {
+                    e.classList.add('explosion')
+                }, 3800, explosion)
+                setTimeout((e) => {
+                    d.querySelectorAll('.brick').forEach((elm) => {
+                        if( e.offsetLeft-e.offsetWidth == elm.offsetLeft && e.offsetTop == elm.offsetTop ){
+                            destroyBrick(elm)
+                        }
+                        if( e.offsetLeft+e.offsetWidth == elm.offsetLeft && e.offsetTop == elm.offsetTop ){
+                            destroyBrick(elm)
+                        }
+                        if( e.offsetLeft == elm.offsetLeft && e.offsetTop-e.offsetWidth == elm.offsetTop ){
+                            destroyBrick(elm)
+                        }
+                        if( e.offsetLeft == elm.offsetLeft && e.offsetTop+e.offsetWidth == elm.offsetTop ){
+                            destroyBrick(elm)
+                        }
+                    })
+                    try {
+                        app.removeChild(e) 
+                    } catch (error) {}
+                }, 4000, explosion)
+            }       
+            setTimeout(plantBomb, 3000)    
+        }
+
+        function ActiveModal(title, message){
+            modal.style.display = 'flex'            
+            d.querySelectorAll('.enemigo').forEach((ene) => {
+                ene.style.animationPlayState = 'paused'
+            })
+            modal.innerHTML = `
+            <h2 class='text-danger'>${title}</h2>
+            <p>${message}</p>
+            `
+            let data = recoverSavedData()
+            // confirm(`${message}`)?location.reload():null
+        }
+
+        function destroyBrick(elm){
+            let nb = `${++destroyedBrick}`.padStart(2, "0")
+            elm.classList.remove('brick')
+            elm.classList.add('clean')
+            elm.classList.add('destroyed')
+            bomb.innerText = nb
+        }
+
+        function recoverSavedData(){
+            if(localStorage.getItem('score') != ''){
+                let score = JSON.parse( localStorage.getItem('score') )
+                return score
+            }
+        }
+
+        function restart(){
+            modal.style.display = 'none'
+
+            let score = {
+                time, 
+                destroyedBrick,
+                destroyedMonster
+            }
+            localStorage.setItem('score', JSON.stringify(score) )
+
+            bomb.innerText = '00'
+            for(let i=0;i<10;i++) {
+                d.querySelectorAll('.explosion, .timer').forEach((exp) => {
+                    try {
+                        app.removeChild(exp)
+                    } catch (error) {}
+                })
+            }
+            d.querySelectorAll('.enemigo').forEach((ene) => {
+                ene.style.animationPlayState = 'initial'
+            })
+            d.querySelectorAll('.destroyed').forEach((ene) => {
+                ene.classList.remove('clean')
+                ene.classList.add('brick')
+            })
+            jugador = d.createElement('div')
+            jugador.classList.add('box') 
+            jugador.classList.add('jugador') 
+            jugador.id = 'jugador' 
+            jugador.style.top = '50px' 
+            jugador.style.left = '50px' 
+            app.appendChild(jugador)
+
+            time = 300
+            activeBomb = true
+            isGameOver = false
+        }
+
+        function iniciar(){
+            activeBomb = true
+            modal.style.display = 'none'
+            d.querySelectorAll('.enemigo').forEach((ene) => {
+                ene.style.animationPlayState = 'running'
+            })
+        }
+
+        w.addEventListener('load', () => {
+            let data = recoverSavedData()
+            plantBomb()
+            !data?null:data.time
+            ActiveModal(`Iniciar Juego`, `<button class='start' autofocus='true' onclick='iniciar()'>¿Jugar?</button>`)
+        })
+    </script>
+
+</body>
+</html>
