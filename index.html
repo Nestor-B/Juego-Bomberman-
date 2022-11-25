@@ -184,7 +184,7 @@
         let time = 300
         let destroyedMonster = 0
         let destroyedBrick = 0
-        let savedData = {}
+        let savedData = {timer: 0, destroyedBrick: 0, destroyedMonster: 0}
         
         // Bloques
         let space = [12,13,23,15,16,17,19,20,31,27,29,37,38,57,58,59,69,51,61,62,63,73,83,85,95,97,107,81,89,91,100,101,102,103,108,109]
@@ -209,7 +209,7 @@
         let bomb = d.querySelector('#bomb') 
 
         if( !localStorage.getItem('score') ){
-            localStorage.setItem('score', '')
+            localStorage.setItem('score', JSON.stringify(savedData))
         }
 
         for (let index = 0; index < 121; index++) {
@@ -301,7 +301,7 @@
                     savedData = data
                     let puntuation = `
                         <div class='puntuation'>
-                            <div>Time: ${savedData['time']}</div>
+                            <div>Time: ${savedData['timer']}</div>
                             <div>Brick: ${savedData['destroyedBrick']}</div>
                             <div>Monster: ${savedData['destroyedMonster']}</div>
                         </div>
@@ -328,7 +328,7 @@
                     isGameOver = true
                     app.removeChild(jugador)
                     let score = {
-                        time, 
+                        timer: time, 
                         destroyedBrick,
                         destroyedMonster
                     }
@@ -338,7 +338,7 @@
                     savedData = data  
                     let puntuation = `
                         <div class='puntuation'>
-                            <div>Time: ${savedData['time']}</div>
+                            <div>Time: ${savedData['timer']}</div>
                             <div>Brick: ${savedData['destroyedBrick']}</div>
                             <div>Monster: ${savedData['destroyedMonster']}</div>
                         </div>
@@ -363,7 +363,7 @@
                     isGameOver = true
                     app.removeChild(jugador)
                     let score = {
-                        time, 
+                        timer: time, 
                         destroyedBrick,
                         destroyedMonster
                     }
@@ -372,7 +372,7 @@
                     savedData = data  
                     let puntuation = `
                         <div class='puntuation'>
-                            <div>Time: ${savedData['time']}</div>
+                            <div>Time: ${savedData['timer']}</div>
                             <div>Brick: ${savedData['destroyedBrick']}</div>
                             <div>Monster: ${savedData['destroyedMonster']}</div>
                         </div>
@@ -498,7 +498,7 @@
 
             let puntuation = `
                 <div class='puntuation'>
-                    <div>Time: ${savedData['time']}</div>
+                    <div>Time: ${savedData['timer']}</div>
                     <div>Brick: ${savedData['destroyedBrick']}</div>
                     <div>Monster: ${savedData['destroyedMonster']}</div>
                 </div>
