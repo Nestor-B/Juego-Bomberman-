@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego - Bomberman</title>
+    <title>Document</title>
     <link rel="shortcut icon" href="https://icons.iconarchive.com/icons/yellowicon/game-stars/256/Bomberman-icon.png" type="image/x-icon">
     <style>
         * {margin: 0;padding: 0;box-sizing: border-box;font-family: Arial, Helvetica, sans-serif;}
@@ -87,6 +87,9 @@
         #app .enemigo._4 {top: 50px;left: 400px;animation: ene4 5s infinite alternate steps(1);background: url(./monster1.png);animation-play-state: paused;}
         #app .enemigo._5 {top: 250px;left: 400px;animation: ene5 7s infinite alternate steps(1);background: url(./monster1.png);animation-play-state: paused;}
         #app .enemigo._6 {top: 450px;left: 400px;animation: ene6 5s infinite alternate steps(1);background: url(./monster1.png);animation-play-state: paused;}
+
+        .puntuation {display: flex;justify-content: space-between;margin-top: 10px;}
+        .puntuation div {padding: 0 1em;}
 
         /* 14
         VM835:1 28
@@ -181,6 +184,7 @@
         let time = 300
         let destroyedMonster = 0
         let destroyedBrick = 0
+        let savedData = {}
         
         // Bloques
         let space = [12,13,23,15,16,17,19,20,31,27,29,37,38,57,58,59,69,51,61,62,63,73,83,85,95,97,107,81,89,91,100,101,102,103,108,109]
@@ -293,10 +297,22 @@
                 try {
                     app.removeChild(jugador)
                     isGameOver = true
+                    let data = recoverSavedData()
+                    savedData = data
+                    let puntuation = `
+                        <div class='puntuation'>
+                            <div>Time: ${savedData['time']}</div>
+                            <div>Brick: ${savedData['destroyedBrick']}</div>
+                            <div>Monster: ${savedData['destroyedMonster']}</div>
+                        </div>
+                    `
                     ActiveModal(`GameOver`,`
-                    
-                    <div>Tiempo agotado!</div> 
-                    <button class='start' onclick='restart()'>¿Volver a jugar?</button>`)
+                        <div>Tiempo agotado!</div> 
+                        <button class='start' onclick='restart()'>
+                            ¿Volver a jugar?
+                        </button>
+                        ${puntuation}
+                    `)
                 } catch (error) {}
             }
             if( isGameOver ) {
@@ -311,10 +327,29 @@
                 if ( ene.offsetLeft == jugador.offsetLeft && ene.offsetTop == jugador.offsetTop ){
                     isGameOver = true
                     app.removeChild(jugador)
+                    let score = {
+                        time, 
+                        destroyedBrick,
+                        destroyedMonster
+                    }
+                    localStorage.setItem('score', JSON.stringify(score) )
+
+                    let data = recoverSavedData()
+                    savedData = data  
+                    let puntuation = `
+                        <div class='puntuation'>
+                            <div>Time: ${savedData['time']}</div>
+                            <div>Brick: ${savedData['destroyedBrick']}</div>
+                            <div>Monster: ${savedData['destroyedMonster']}</div>
+                        </div>
+                    `
                     ActiveModal(`GameOver`,`
-                    
-                    <div>Muerto por monster!</div> 
-                    <button class='start' onclick='restart()'>¿Volver a jugar?</button>`)
+                        <div>Muerto por monster!</div> 
+                        <button class='start' onclick='restart()'>
+                            ¿Volver a jugar?
+                        </button>
+                        ${puntuation}
+                    `)
                 }
                 d.querySelectorAll('.explosion').forEach((exp) => {
                     if ( ene.offsetLeft == exp.offsetLeft && ene.offsetTop == exp.offsetTop ){
@@ -327,10 +362,28 @@
                 if ( jugador.offsetLeft == exp.offsetLeft && jugador.offsetTop == exp.offsetTop ){
                     isGameOver = true
                     app.removeChild(jugador)
+                    let score = {
+                        time, 
+                        destroyedBrick,
+                        destroyedMonster
+                    }
+                    localStorage.setItem('score', JSON.stringify(score) )                  
+                    let data = recoverSavedData()
+                    savedData = data  
+                    let puntuation = `
+                        <div class='puntuation'>
+                            <div>Time: ${savedData['time']}</div>
+                            <div>Brick: ${savedData['destroyedBrick']}</div>
+                            <div>Monster: ${savedData['destroyedMonster']}</div>
+                        </div>
+                    `                    
                     ActiveModal(`GameOver`,`
-                    
-                    <div>Muerto por bomba!</div> 
-                    <button class='start' onclick='restart()'>¿Volver a jugar?</button>`)
+                        <div>Muerto por bomba!</div> 
+                        <button class='start' onclick='restart()'>
+                            ¿Volver a jugar?
+                        </button>
+                        ${puntuation}
+                    `)
                 }
             })            
         }, 200)
@@ -378,11 +431,11 @@
             d.querySelectorAll('.enemigo').forEach((ene) => {
                 ene.style.animationPlayState = 'paused'
             })
+
             modal.innerHTML = `
-            <h2 class='text-danger'>${title}</h2>
-            <p>${message}</p>
+                <h2 class='text-danger'>${title}</h2>
+                <p>${message}</p>
             `
-            let data = recoverSavedData()
             // confirm(`${message}`)?location.reload():null
         }
 
@@ -403,14 +456,6 @@
 
         function restart(){
             modal.style.display = 'none'
-
-            let score = {
-                time, 
-                destroyedBrick,
-                destroyedMonster
-            }
-            localStorage.setItem('score', JSON.stringify(score) )
-
             bomb.innerText = '00'
             for(let i=0;i<10;i++) {
                 d.querySelectorAll('.explosion, .timer').forEach((exp) => {
@@ -449,9 +494,24 @@
 
         w.addEventListener('load', () => {
             let data = recoverSavedData()
+            savedData = data
+
+            let puntuation = `
+                <div class='puntuation'>
+                    <div>Time: ${savedData['time']}</div>
+                    <div>Brick: ${savedData['destroyedBrick']}</div>
+                    <div>Monster: ${savedData['destroyedMonster']}</div>
+                </div>
+            `
+
             plantBomb()
-            !data?null:data.time
-            ActiveModal(`Iniciar Juego`, `<button class='start' autofocus='true' onclick='iniciar()'>¿Jugar?</button>`)
+            ActiveModal(`Iniciar Juego`, `
+                <button class='start' autofocus='true' onclick='iniciar()'>
+                    ¿Jugar?
+                </button>
+                <br>
+                ${puntuation}
+            `)
         })
     </script>
 
