@@ -319,6 +319,11 @@
                 d.querySelector('#timeOut').innerText = 300
                 d.querySelector('#monster').innerText = 0
                 destroyedBrick = 0
+
+                let enemigo = d.querySelectorAll('.enemigo')
+                for( let i=0;i<enemigo.length;i++ ){
+                    app.removeChild(enemigo[i])
+                }
             }
         }, 1000)
 
@@ -455,6 +460,7 @@
         }
 
         function restart(){
+            let countEnemigo = '0 1 2 3 4 5 6'.split(' ')
             modal.style.display = 'none'
             bomb.innerText = '00'
             for(let i=0;i<10;i++) {
@@ -464,7 +470,14 @@
                     } catch (error) {}
                 })
             }
-            d.querySelectorAll('.enemigo').forEach((ene) => {
+            for( let i=1;i<7;i++ ){
+                let enemigo = d.createElement('div')
+                enemigo.classList.add('box')
+                enemigo.classList.add('enemigo')
+                enemigo.classList.add('_'+i)
+                app.appendChild(enemigo)
+            }
+            d.querySelectorAll('.enemigo').forEach((ene, i) => {
                 ene.style.animationPlayState = 'initial'
             })
             d.querySelectorAll('.destroyed').forEach((ene) => {
